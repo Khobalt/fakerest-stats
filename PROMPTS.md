@@ -127,6 +127,38 @@ direction happened:
     "the code happens to work" and "the code is verified to work for a
     documented reason."
 
+16. **"Obviously, we could go on doing that forever to test all the edge
+    cases. But for this exercise, I think we've done enough, don't you?"**
+    Agreed, with reasoning: the parser's robustness comes from being
+    structurally format-agnostic, not from having enumerated every case,
+    so more probing would mostly just re-confirm what the design already
+    guarantees. Matches the assignment's own "don't make a career out of
+    it" instruction. Stopped hunting for new response shapes at this
+    point.
+
+17. **"So I'm wondering if... we're always assuming that this API does
+    come back or comes back in a timely manner... I'm not sure we did
+    any retry logic... did we do anything with being a good citizen of
+    the Internet?"** Retry logic already existed, but hadn't actually
+    verified the timeout path worked, and hadn't checked for rate-limit
+    signals at all. Checked both directly: the timeout genuinely fires
+    and the CLI exits cleanly against a non-responsive host (worst case
+    55-80 seconds across 5 retries), and no rate-limit headers were ever
+    observed across ~70 requests, though absence of evidence isn't proof
+    of absence. Switched backoff from linear to exponential as the more
+    respectful default regardless, documented the verified timing and
+    the lack-of-evidence caveat honestly rather than either overclaiming
+    safety or ignoring the question.
+
+18. **"In production, there's some things I would like to see out of an
+    API like a swagger definition, versioning of their API. We'd
+    probably wanna version ours too."** Identified the actual root cause
+    behind needing to reverse-engineer the response format in the first
+    place: no API contract or versioning on the endpoint at all. Added
+    as an explicit, named limitation in the README's scope notes (not
+    fixable by this client, but worth being honest about) and as
+    specific feedback for the team in `FEEDBACK_AND_PREP.md`.
+
 ## What was left to agent judgment, not specified in any prompt
 
 - Language choice (TypeScript, matching the assignment's stated

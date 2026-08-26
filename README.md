@@ -101,10 +101,24 @@ the run.
 
 If a request comes back with zero usable user records (empty body, error
 text, or a response that parsed but contained nothing recognizable), the
-client treats that as a failed attempt and retries with linear backoff, up
-to 5 attempts, before giving up and exiting non-zero with a message on
-stderr. In practice this was needed, the endpoint fails often enough that a
-single naive request regularly returns nothing useful.
+client treats that as a failed attempt and retries with exponential
+backoff, up to 5 attempts, before giving up and exiting non-zero with a
+message on stderr. In practice this was needed, the endpoint fails often
+enough that a single naive request regularly returns nothing useful.
+Each request also has a 15-second timeout, verified directly against a
+genuinely non-responsive host rather than assumed to work: worst case
+across all 5 attempts is roughly 55-80 seconds before the client reports
+failure and exits, a real wait, not instant, but it does reliably
+terminate rather than hang.
+
+No rate-limit response headers (`Retry-After`, `X-RateLimit-*`) were ever
+observed from this endpoint across roughly 70 requests, and normal
+response times were 0.2-2.3 seconds, so there's no evidence this specific
+server enforces request limits. That's not the same as confirming it
+doesn't, and exponential backoff (rather than immediately hammering
+retries) is the more respectful default for a client talking to an API it
+doesn't control, regardless of whether the server happens to enforce
+anything.
 
 ## Security notes
 
@@ -128,3 +142,11 @@ single naive request regularly returns nothing useful.
 Calculations 3-5 (most-friends-per-city, most-common-name, most-common-hobby)
 are included as the extra credit the assignment invites, but kept to the
 same style and size as the required two rather than expanded further.
+
+Worth naming as a limitation of the exercise itself, not something this
+client can fix: the endpoint has no OpenAPI/Swagger contract and no
+versioning, which is the actual root cause behind needing to
+reverse-engineer the response shape by hand in the first place. A real
+production API would let a client distinguish "the response shape changed
+on purpose" from "something upstream actually broke," this one doesn't,
+so this client can only be defensive about it, not resolve it.

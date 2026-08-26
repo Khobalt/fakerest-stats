@@ -59,7 +59,10 @@ async function fetchUsers(endpoint: string): Promise<User[]> {
     } catch (err) {
       lastError = err;
       if (attempt < MAX_ATTEMPTS) {
-        await sleep(RETRY_BASE_DELAY_MS * attempt);
+        // Exponential, not linear: this is someone else's server, no
+        // evidence it enforces rate limits, but no evidence it doesn't
+        // either, back off accordingly rather than assuming.
+        await sleep(RETRY_BASE_DELAY_MS * 2 ** (attempt - 1));
       }
     }
   }

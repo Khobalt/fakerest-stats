@@ -22,7 +22,9 @@ repo as a record of what was verified and how, not just asserted.
 - [x] Endpoint accepted as a CLI parameter (`process.argv[2]`)
 - [x] Actually queries the API over the network (verified live, repeatedly)
 - [x] Runs repeatedly and handles changing data correctly, tested across response sizes from 30 users to 200,000+
-- [x] Handles reasonable error conditions, retry-with-backoff on empty/invalid/error responses, clean non-zero exit + stderr message on no-argument and unreachable-host cases, both tested directly
+- [x] Handles reasonable error conditions, retry-with-exponential-backoff on empty/invalid/error responses, clean non-zero exit + stderr message on no-argument and unreachable-host cases, both tested directly
+- [x] Timeout behavior verified directly against a genuinely non-responsive host, not just assumed (fires correctly, CLI exits cleanly, worst case 55-80s across 5 retries)
+- [x] Checked for rate-limit signals (none observed across ~70 requests), backoff is exponential regardless as the respectful default
 - [ ] **All source code in a public GitHub repository, not done yet, waiting on go-ahead to push**
 - [x] Built assuming they'll clone and test it personally (`npm install && npm run build`, nothing exotic)
 - [x] Unix philosophy, does one thing, clean JSON out, composable with `jq`
