@@ -16,6 +16,20 @@ Or during development, skip the build step:
 npm run dev -- http://test.brightsign.io:3000
 ```
 
+## Tests
+
+```
+npm test
+```
+
+Covers the parser against every response shape actually observed from the
+live endpoint (standard array, compact and pretty-printed newline-delimited
+JSON, empty body, plain-text error, mixed valid/invalid records), plus the
+stats calculations against known fixture data. Deliberately not testing
+against the live endpoint directly, its responses aren't reproducible on
+demand, which is exactly why the parser behavior needed to be locked in with
+fixtures rather than relying on manual runs happening to hit each case.
+
 ## What it calculates
 
 - Average age of all users, per city (required)
