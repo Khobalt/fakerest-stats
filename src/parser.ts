@@ -1,4 +1,4 @@
-import { User, isUser } from "./types.js";
+import { User, isUser, isFriend } from "./types.js";
 
 /**
  * The endpoint's response shape is not documented and, per observed
@@ -64,6 +64,20 @@ function* extractTopLevelJsonValues(text: string): Generator<string> {
 }
 
 /**
+ * isUser() only confirms `friends` is an array, not what's inside it, since
+ * the server has been observed to send otherwise-well-formed users. A
+ * malformed entry in that array (e.g. a bare `null`) is valid JSON and
+ * would otherwise reach stats calculations that assume every friend has a
+ * `.hobbies` array, crashing the whole run on what should be a skippable
+ * bad record. Same "don't let one bad record sink an otherwise-valid
+ * response" reasoning as the top-level skip below, just one level deeper:
+ * drop only the malformed friends, not the whole user.
+ */
+function sanitizeFriends(user: User): User {
+  return { ...user, friends: user.friends.filter(isFriend) };
+}
+
+/**
  * Parses a response body into a flat list of users, regardless of whether
  * it arrived as a single JSON array or as newline-delimited JSON objects.
  * Values that parse but don't look like a user (missing expected fields)
@@ -83,10 +97,10 @@ export function parseUsers(body: string): User[] {
 
     if (Array.isArray(value)) {
       for (const item of value) {
-        if (isUser(item)) users.push(item);
+        if (isUser(item)) users.push(sanitizeFriends(item));
       }
     } else if (isUser(value)) {
-      users.push(value);
+      users.push(sanitizeFriends(value));
     }
   }
 

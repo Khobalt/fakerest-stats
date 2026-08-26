@@ -31,7 +31,7 @@ repo as a record of what was verified and how, not just asserted.
 - [x] README explains the work and how to use it
 - [x] Security discussed in README (plain HTTP endpoint, no shell/eval of response data, unbounded response size named as a real gap, no secrets involved)
 - [x] Scoped reasonably, not gold-plated
-- [x] Automated tests, not just manual verification, 17 tests covering the parser against every response shape actually observed plus the stats calculations against fixture data (`npm test`)
+- [x] Automated tests, not just manual verification, 19 tests covering the parser against every response shape actually observed plus the stats calculations against fixture data (`npm test`)
 
 ## Submission package
 

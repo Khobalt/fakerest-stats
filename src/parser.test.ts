@@ -72,6 +72,21 @@ test("handles a single JSON object with no enclosing array", () => {
   assert.equal(parseUsers(JSON.stringify(validUser)).length, 1);
 });
 
+test("drops a malformed friend entry instead of crashing or keeping it", () => {
+  // A bare `null` (or any non-object, or an object missing hobbies/name) in
+  // friends[] is valid JSON that isUser() lets through, since it only
+  // checks that friends is an array. Downstream stats code assumes every
+  // friend has a .hobbies array, so an unfiltered null would crash on
+  // first access rather than being treated as the malformed record it is.
+  const body = JSON.stringify({
+    ...validUser,
+    friends: [null, { name: "Grace", hobbies: ["Golf"] }, { name: "NoHobbies" }],
+  });
+  const users = parseUsers(body);
+  assert.equal(users.length, 1);
+  assert.deepEqual(users[0].friends, [{ name: "Grace", hobbies: ["Golf"] }]);
+});
+
 test("does not get confused by braces inside string values", () => {
   const trickyUser = {
     ...validUser,

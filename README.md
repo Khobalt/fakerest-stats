@@ -136,6 +136,19 @@ anything.
   the solution focused on what the assignment asks for.
 - No secrets, credentials, or user input beyond the endpoint URL are
   handled anywhere in this tool.
+- Field-level validation on parsed records isn't just a shape check for its
+  own sake. Two real gaps were found by deliberately testing what the
+  parser lets through, not just what it's expected to receive, and fixed:
+  a malformed entry inside a user's `friends` array (a bare `null` is
+  valid JSON) used to reach stats code that assumed every friend had a
+  `.hobbies` array, crashing the whole run; and a `city` value of exactly
+  `"__proto__"` used to silently overwrite the result object's own
+  prototype instead of appearing as a key, dropping that city from the
+  output with no error. Both are now handled explicitly (`isFriend()` in
+  `src/types.ts` filters malformed friend entries per-record instead of
+  discarding the whole user; `Object.fromEntries()` in `src/stats.ts`
+  builds the per-city results instead of bracket-assigning into a plain
+  object literal), with regression tests reproducing each case.
 
 ## Notes on scope
 

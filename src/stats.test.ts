@@ -70,6 +70,34 @@ test("mostCommonHobbyOfFriends aggregates hobbies across every friend of every u
   assert.equal(mostCommonHobbyOfFriends(users), "Fishing");
 });
 
+test("a city literally named \"__proto__\" is a normal key, not a prototype overwrite", () => {
+  // City names come straight from the response body. Building the result
+  // via `result[city] = value` on a plain object literal would run into
+  // the inherited __proto__ accessor instead of adding a key, silently
+  // dropping that city's data with no error. Confirm it round-trips like
+  // any other city: present as an own key, and surviving JSON.stringify.
+  const protoUsers: User[] = [
+    {
+      id: 1,
+      name: "Eve",
+      city: "__proto__",
+      age: 99,
+      friends: [{ name: "Mallory", hobbies: ["Golf"] }],
+    },
+    { id: 2, name: "Bob", city: "NYC", age: 40, friends: [] },
+  ];
+
+  const ages = averageAgePerCity(protoUsers);
+  assert.equal(Object.getPrototypeOf(ages), Object.prototype);
+  assert.deepEqual(Object.keys(ages).sort(), ["NYC", "__proto__"]);
+  assert.equal(ages["__proto__"], 99);
+  assert.equal(JSON.parse(JSON.stringify(ages))["__proto__"], 99);
+
+  const friendsResult = userWithMostFriendsPerCity(protoUsers);
+  assert.equal(Object.getPrototypeOf(friendsResult), Object.prototype);
+  assert.equal(friendsResult["__proto__"].name, "Eve");
+});
+
 test("mostCommonHobbyOfFriends returns null when nobody has any friends", () => {
   const lonely: User[] = [
     { id: 1, name: "Solo", city: "Nowhere", age: 20, friends: [] },
