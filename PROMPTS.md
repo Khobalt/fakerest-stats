@@ -95,6 +95,21 @@ direction happened:
     agent doing everything unsupervised. It undersold what actually
     happened, which is documented above.
 
+13. **"Um, you know, they're using jq for testing. Shouldn't we have some
+    of our own tests in here?"** Caught that the solution had zero
+    automated tests, correctness had only been verified by hand during
+    development. Result: a 16-test suite (`src/parser.test.ts`,
+    `src/stats.test.ts`) covering the parser against every response
+    shape actually observed from the live endpoint, plus the stats
+    calculations against fixture data. Deliberately not testing against
+    the live endpoint directly, since its responses aren't reproducible
+    on demand, that's exactly why the earlier manual verification wasn't
+    enough on its own.
+
+14. **"Remember to keep prompts updated."** Not a one-off fix, a standing
+    instruction: this file gets a new entry as the work happens, not
+    reconstructed from memory after the fact.
+
 ## What was left to agent judgment, not specified in any prompt
 
 - Language choice (TypeScript, matching the assignment's stated
