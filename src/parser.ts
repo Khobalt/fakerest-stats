@@ -10,8 +10,22 @@ import { User, isUser } from "./types.js";
  * between them and ignoring text that isn't valid JSON at all.
  */
 function* extractTopLevelJsonValues(text: string): Generator<string> {
+  // depth 0 means "not currently inside any {...} or [...]". Every time
+  // depth returns to 0 after having gone above it, we've just closed a
+  // complete top-level value, that's what gets yielded. This is what
+  // lets a single pass handle both "[user, user, user]" (depth goes
+  // 0->1 once, at the very end) and "user\nuser\nuser" with no
+  // separators (depth returns to 0 after each one, yielding three).
   let depth = 0;
   let start = -1;
+
+  // inString/escaped exist only so that characters like { or } *inside a
+  // quoted string value* (e.g. a hobby literally named "Board Games {2}")
+  // don't get counted as structural brackets. Without this, a brace
+  // inside a string would desync the depth count and corrupt everything
+  // after it. escaped tracks whether the current character is preceded
+  // by an unescaped backslash, so an escaped quote (\") inside a string
+  // doesn't get mistaken for the string actually ending.
   let inString = false;
   let escaped = false;
 
@@ -26,7 +40,7 @@ function* extractTopLevelJsonValues(text: string): Generator<string> {
       } else if (ch === '"') {
         inString = false;
       }
-      continue;
+      continue; // brackets/braces are ignored entirely while inside a string
     }
 
     if (ch === '"') {
@@ -35,11 +49,13 @@ function* extractTopLevelJsonValues(text: string): Generator<string> {
     }
 
     if (ch === "{" || ch === "[") {
-      if (depth === 0) start = i;
+      if (depth === 0) start = i; // marks where this top-level value began
       depth++;
     } else if (ch === "}" || ch === "]") {
       depth--;
       if (depth === 0 && start !== -1) {
+        // Back to top level: everything from `start` to here (inclusive)
+        // is one complete, self-contained JSON value.
         yield text.slice(start, i + 1);
         start = -1;
       }

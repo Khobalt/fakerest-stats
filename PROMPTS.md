@@ -159,6 +159,33 @@ direction happened:
     fixable by this client, but worth being honest about) and as
     specific feedback for the team in `FEEDBACK_AND_PREP.md`.
 
+19. **"Some things that haven't exactly happened. I haven't proven to
+    myself that any of this is actually true. ... a list of open
+    questions, maybe a table of things we do in production, how easy
+    this would be to hand off to somebody else. ... what would need to
+    change for this for me to hand this off to a junior engineer?"** The
+    sharpest instruction in the session: stopped accepting the agent's
+    claims at face value and asked for the means to independently verify
+    them, plus an honest accounting of what's still genuinely unknown,
+    not just what's been done. Produced `SELF_REVIEW.md`: a short list
+    of commands to personally re-verify the key claims (tests pass, the
+    CLI works live, the timeout fires, the git history is actually
+    clean), a list of real open questions (is the flakiness actually
+    intentional or just a good guess, have we really seen every response
+    shape, would BrightSign actually want exponential backoff), a
+    production-readiness gap table, and an honest handoff assessment
+    that found one real, specific documentation gap rather than a vague
+    "could be more thorough" note.
+
+20. **"Yeah. Do the fix and remember to keep prompts updated."** The
+    fix from item 19: `parser.ts`'s core scanning function had
+    function-level docstrings but no inline explanation of the actual
+    state machine (why string state is tracked separately, so a brace
+    inside a quoted value like `"Board Games {2}"` doesn't corrupt the
+    depth count). Added targeted comments explaining the non-obvious
+    parts specifically, not a comment on every line. Verified the build
+    and all 17 tests still pass after the change.
+
 ## What was left to agent judgment, not specified in any prompt
 
 - Language choice (TypeScript, matching the assignment's stated
