@@ -1,0 +1,26 @@
+# Editor backup files (from the original assignment repo)
+*~
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Logs
+npm-debug.log*
+*.log
+
+# Environment / secrets (none used by this project, ignored as a habit)
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor state
+.vscode/
+.idea/
