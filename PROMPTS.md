@@ -186,6 +186,23 @@ direction happened:
     parts specifically, not a comment on every line. Verified the build
     and all 17 tests still pass after the change.
 
+21. **"I think we're ready. Right?"** Didn't just agree, re-verified
+    fresh: clean git status, full commit log, a clean rebuild, all tests
+    passing, and one more live run against the actual endpoint, all run
+    again at this point rather than trusting the earlier results were
+    still valid.
+
+22. **"I think last thing would be to update checklist. Add a section,
+    like, beyond requirements."** Added a "Beyond the stated
+    requirements" section to `CHECKLIST.md` summarizing everything done
+    past the assignment's minimum (the test suite, the direct
+    timeout/retry verification, the rate-limit check, the follow-up
+    probing that caught and fixed an overclaimed README statement, the
+    git-history fixes, the handoff-clarity comments, and the self-review
+    file itself), kept to what's demonstrable and technical rather than
+    including the private process-feedback content, that stays in
+    `FEEDBACK_AND_PREP.md` for the actual conversation, not the repo.
+
 ## What was left to agent judgment, not specified in any prompt
 
 - Language choice (TypeScript, matching the assignment's stated
