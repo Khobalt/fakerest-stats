@@ -203,6 +203,72 @@ direction happened:
     including the private process-feedback content, that stays in
     `FEEDBACK_AND_PREP.md` for the actual conversation, not the repo.
 
+## Continued, after the repo was actually pushed public
+
+A gap worth being honest about rather than papering over: partway
+through this session the conversation was summarized to manage context
+length. This file's own rule (item 14) is to record prompts as they
+happen, not reconstruct them from memory, so the exact prompt that gave
+the go-ahead for the actual `git push` to
+`github.com/Khobalt/fakerest-stats` isn't reproduced here, it fell on
+the far side of that cut and genuinely isn't known verbatim. What is
+known and independently verifiable: the push happened, the repo is
+public (`gh repo view` confirms `visibility: PUBLIC`), and the checklist
+item still read "not done yet, waiting on go-ahead to push" when this
+session picked back up, that gap was caught and corrected immediately.
+A prompt covering some outreach/scheduling logistics alongside the
+checklist fix isn't reproduced here, out of scope for this repo.
+Everything from here on was captured live again, in-session.
+
+23. **"Any other security questions though?"** Read the private
+    call-prep file to see what was already covered, checked the
+    README's actual current security section and ran `npm audit`
+    directly rather than assuming a clean result, and surfaced four
+    concrete angles not yet written down: SSRF exposure if the same
+    logic were ever wrapped in a service, a verified zero-runtime-
+    dependency/clean-audit finding worth naming proactively as a
+    positive, MITM reframed as a correctness risk (a wrong stat
+    silently injected) and not just a confidentiality one, and a
+    PII-in-logs question flagged as unverified rather than assumed
+    safe. Added to `FEEDBACK_AND_PREP.md` once asked to.
+
+24. **"Are we trusting the API not to hack us?"** Answered by reading
+    the real downstream code instead of reasoning about it in the
+    abstract, formed two concrete hypotheses from that reading, then
+    wrote small reproduction scripts and ran them against the actual
+    compiled output to confirm both rather than asserting from code
+    inspection alone: a bare `null` inside a user's `friends[]` array is
+    valid JSON that `isUser()` let through unchecked, and crashed the
+    tool via an uncaught exception; a `city` of exactly `"__proto__"`
+    silently overwrote the result object's own prototype instead of
+    appearing as a key, on plain bracket assignment, dropping that
+    city's data from the output with no error at all. Neither is code
+    execution, verified no `eval`/`exec` anywhere in `src/`, but both
+    are real, previously-unverified places the tool trusted response
+    content more than it should have.
+
+25. **"Fix and push. What about prompt injection?"** Two things handled
+    together, one code, one a direct question. Fixed both bugs from
+    item 24 (malformed friend entries filtered per-record instead of
+    discarding the whole user; per-city results built with
+    `Object.fromEntries()` instead of bracket-assigning into a plain
+    object literal, which is what let `"__proto__"` hit the inherited
+    accessor in the first place), added regression tests reproducing
+    each original failure against the real compiled code, confirmed all
+    19 tests pass (up from 17) and a fresh live run against the real
+    endpoint still works, then committed and pushed. Separately,
+    answered the prompt injection question honestly rather than just
+    reassuring: the shipped tool has zero exposure (no LLM in its
+    runtime path, verified by grep), but development itself meant
+    reading a live, not-fully-trusted endpoint's raw responses directly
+    into agent context repeatedly, which is the real category of risk,
+    with an honest "don't know for certain, wasn't specifically
+    screened for at the time" rather than false confidence, plus a real
+    example from earlier in this same session (a message formatted to
+    look like an urgent system directive, correctly flagged as
+    suspicious and ignored rather than followed) instead of only a
+    hypothetical. Written up in `FEEDBACK_AND_PREP.md`.
+
 ## What was left to agent judgment, not specified in any prompt
 
 - Language choice (TypeScript, matching the assignment's stated
