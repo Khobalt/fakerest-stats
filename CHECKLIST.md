@@ -25,7 +25,7 @@ repo as a record of what was verified and how, not just asserted.
 - [x] Handles reasonable error conditions, retry-with-exponential-backoff on empty/invalid/error responses, clean non-zero exit + stderr message on no-argument and unreachable-host cases, both tested directly
 - [x] Timeout behavior verified directly against a genuinely non-responsive host, not just assumed (fires correctly, CLI exits cleanly, worst case 55-80s across 5 retries)
 - [x] Checked for rate-limit signals (none observed across ~70 requests), backoff is exponential regardless as the respectful default
-- [ ] **All source code in a public GitHub repository, not done yet, waiting on go-ahead to push**
+- [x] All source code in a public GitHub repository — pushed to https://github.com/Khobalt/fakerest-stats, verified public via `gh repo view`
 - [x] Built assuming they'll clone and test it personally (`npm install && npm run build`, nothing exotic)
 - [x] Unix philosophy, does one thing, clean JSON out, composable with `jq`
 - [x] README explains the work and how to use it
@@ -83,5 +83,4 @@ more maintainable, not because more is automatically better:
 
 ## Still open
 
-- Create the public GitHub repo and push
 - Submit the repo URL through the application process
