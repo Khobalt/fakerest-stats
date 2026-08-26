@@ -63,23 +63,31 @@ The endpoint returns an array of user objects:
 `friends` entries have a name and a list of hobbies only, no age or city of
 their own.
 
-**The wire format is not consistent between calls.** Across a couple dozen
-probe requests, the same endpoint returned all of the following:
+**The wire format is not consistent between calls.** Across roughly 70
+probe requests total, the same endpoint returned all of the following:
 
-- A standard JSON array, pretty-printed (`[\n  {\n    "id": ...`)
+- A standard JSON array, pretty-printed (`[\n  {\n    "id": ...`) or compact
 - Newline-delimited JSON objects with no enclosing array and no commas
   between them, both compact (one object per line) and pretty-printed
   (each object spanning several lines)
 - An empty response body
 - A plain-text, non-JSON error string: `500 - Something bad happened!`
+- A raw, embedded transcript of an unrelated HTTP error response (nginx
+  headers plus an HTML 400 page, as literal text inside the body)
 
-**All of these came back with an HTTP 200 status.** The status code alone
-does not indicate whether the body is usable, the body has to be inspected
-regardless of what the response code says.
+**Status codes are not reliable either, in either direction.** Most of the
+malformed responses above (empty body, the plain-text error string, the
+embedded-transcript case) came back with a 200 status, so status alone
+doesn't mean the body is usable. But the plain-text error string was also
+observed once with a genuine HTTP 500, so a non-200 status can't be
+assumed to always carry a human-readable explanation either. The body has
+to be inspected regardless of what the status code says, and a non-2xx
+status has to be treated as a failure regardless of what the body contains.
 
 Response size also varies enormously, from empty to 100,000+ user records
-in a single call, and the record count is different on every successful
-call.
+in a single call (and, under repeated rapid requests, response times
+increase noticeably, worth knowing if hammering the endpoint quickly),
+and the record count is different on every successful call.
 
 ## How the client handles this
 

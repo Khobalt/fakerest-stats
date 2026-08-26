@@ -110,6 +110,23 @@ direction happened:
     instruction: this file gets a new entry as the work happens, not
     reconstructed from memory after the fact.
 
+15. **"Do you think we hit their API enough to catch different cases?"**
+    A fair challenge to the confidence level in the README. Ran a larger
+    batch of live probes (~40 more calls) specifically to check, and it
+    surfaced two real gaps: a response shape never seen before (a raw,
+    embedded transcript of an unrelated HTTP 400 error, headers and HTML
+    included, no JSON characters anywhere in it), and proof that the
+    "500 - Something bad happened!" text isn't always paired with an
+    HTTP 200 status as the README had claimed, sometimes it comes with a
+    genuine HTTP 500. The client's existing logic already handled both
+    correctly (no JSON braces means zero users either way, and
+    `!response.ok` already catches a real 500 regardless of body
+    content), but the README's confidence was overstated relative to
+    what had actually been verified. Fixed the documentation, added the
+    new case as a test fixture. Good example of the difference between
+    "the code happens to work" and "the code is verified to work for a
+    documented reason."
+
 ## What was left to agent judgment, not specified in any prompt
 
 - Language choice (TypeScript, matching the assignment's stated

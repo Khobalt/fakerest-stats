@@ -46,6 +46,20 @@ test("returns an empty list for a plain-text error response", () => {
   assert.deepEqual(parseUsers("500 - Something bad happened!"), []);
 });
 
+test("returns an empty list for an embedded raw-HTTP-transcript error", () => {
+  // Observed live: the endpoint occasionally returns, as its body, a raw
+  // dump of an unrelated HTTP response, headers and an HTML error page
+  // included, with no JSON braces or brackets anywhere in it.
+  const body = [
+    "HTTP/1.1 400 Bad Request",
+    "Server: nginx",
+    "Content-Type: text/html",
+    "",
+    "<html><body><h1>400 Bad Request</h1></body></html>",
+  ].join("\n");
+  assert.deepEqual(parseUsers(body), []);
+});
+
 test("skips values that parse as JSON but aren't user-shaped, keeps the valid ones", () => {
   const body =
     JSON.stringify({ notAUser: true }) + "\n" + JSON.stringify(validUser);
