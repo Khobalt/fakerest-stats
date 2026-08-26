@@ -70,12 +70,26 @@ direction happened:
    Fixed by rewriting history rather than patching over it, since nothing
    had been pushed yet.
 
-10. **"I'm sure the flakiness was intentional."** A confident, correct
-    read on the endpoint's design (see `FEEDBACK_AND_PREP.md`), used to
-    sharpen the feedback point about it from a question into a specific
-    recommendation.
+10. **"Okay. So let's do a little meta project work here. Um, some things
+    I'm noticing. Her email said submit for... via Greenhouse. The test
+    itself says push a public repo. ... Was there anything else to flag?
+    And perhaps we should have some questions ready, prepare for
+    questions ourselves."** Stepped back from the coding work entirely to
+    treat the assignment as a real process to give feedback on, not just
+    a test to pass: caught the Greenhouse/GitHub submission-channel
+    ambiguity and the role-name mismatch (the repo says "Senior Software
+    Engineer (cloud)," the actual role in play is different) independently,
+    then asked for both constructive feedback for the team and honest
+    self-prep for the follow-up call. Saved as `FEEDBACK_AND_PREP.md`,
+    kept private since half of it is call prep, not something to hand
+    them ahead of the actual conversation.
 
-11. **"Hmmm... PROMPTS.md is a little... unflattering"** The reason this
+11. **"I'm sure the flakiness was intentional."** A confident, correct
+    read on the endpoint's design, used to sharpen the feedback point
+    about it in `FEEDBACK_AND_PREP.md` from an open question into a
+    specific recommendation.
+
+12. **"Hmmm... PROMPTS.md is a little... unflattering"** The reason this
     section exists: the original version stopped after the build phase
     and made the process look like minimal direction followed by the
     agent doing everything unsupervised. It undersold what actually
